@@ -52,13 +52,14 @@ func (s *Store) AddChunks(ctx context.Context, chunks []Chunk) error {
 		}
 	}
 
-	const batchSize = 50
+	// Use small batches with concurrency=1 to respect Voyage rate limits.
+	const batchSize = 10
 	for i := 0; i < len(docs); i += batchSize {
 		end := i + batchSize
 		if end > len(docs) {
 			end = len(docs)
 		}
-		if err := s.collection.AddDocuments(ctx, docs[i:end], 4); err != nil {
+		if err := s.collection.AddDocuments(ctx, docs[i:end], 1); err != nil {
 			return fmt.Errorf("adding batch %d: %w", i/batchSize, err)
 		}
 	}
