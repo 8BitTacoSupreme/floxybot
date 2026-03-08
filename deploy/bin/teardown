@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEPLOY_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+INSTANCE_FILE="$DEPLOY_DIR/.linode-instance"
+
+# Linode API token
+REMOTEBUILDS_ENV="$HOME/remotebuilds/.env"
+if [[ -f "$REMOTEBUILDS_ENV" ]]; then
+    source "$REMOTEBUILDS_ENV"
+fi
+
+if [[ -z "${LINODE_CLI_TOKEN:-}" ]]; then
+    echo "Error: LINODE_CLI_TOKEN not set."
+    exit 1
+fi
+export LINODE_CLI_TOKEN
+
+if [[ ! -f "$INSTANCE_FILE" ]]; then
+    echo "No instance file found. Nothing to tear down."
+    exit 0
+fi
+
+LINODE_ID=$(jq -r '.id' "$INSTANCE_FILE")
+IP=$(jq -r '.ip' "$INSTANCE_FILE")
+
+echo "Destroying Linode $LINODE_ID ($IP)..."
+linode-cli linodes delete "$LINODE_ID"
+
+rm -f "$INSTANCE_FILE"
+rm -f "$DEPLOY_DIR/server-linux"
+
+echo "Floxybot backend destroyed."

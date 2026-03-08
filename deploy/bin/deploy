@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEPLOY_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_DIR="$(cd "$DEPLOY_DIR/.." && pwd)"
+INSTANCE_FILE="$DEPLOY_DIR/.linode-instance"
+SSH_DIR="$DEPLOY_DIR/.ssh/floxybot"
+
+# Linode API token from remotebuilds .env
+REMOTEBUILDS_ENV="$HOME/remotebuilds/.env"
+if [[ -f "$REMOTEBUILDS_ENV" ]]; then
+    source "$REMOTEBUILDS_ENV"
+fi
+
+if [[ -z "${LINODE_CLI_TOKEN:-}" ]]; then
+    echo "Error: LINODE_CLI_TOKEN not set. Source ~/remotebuilds/.env or export it."
+    exit 1
+fi
+export LINODE_CLI_TOKEN
+
+REGION="${FLOXYBOT_REGION:-us-ord}"
+TYPE="${FLOXYBOT_TYPE:-g6-nanode-1}"
+IMAGE="${FLOXYBOT_IMAGE:-linode/fedora41}"
+LABEL="${FLOXYBOT_LABEL:-floxybot-backend}"
+
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o LogLevel=ERROR"
+
+provision() {
+    # Generate SSH key if needed
+    if [[ ! -f "$SSH_DIR/id_ed25519" ]]; then
+        echo "Generating SSH key pair..."
+        mkdir -p "$SSH_DIR"
+        ssh-keygen -t ed25519 -f "$SSH_DIR/id_ed25519" -N "" -C "floxybot-backend"
+    fi
+
+    SSH_PUBKEY=$(cat "$SSH_DIR/id_ed25519.pub")
+    SSH_OPTS="-i $SSH_DIR/id_ed25519 $SSH_OPTS"
+
+    # Idempotent: check if instance already exists
+    if [[ -f "$INSTANCE_FILE" ]]; then
+        EXISTING_ID=$(jq -r '.id' "$INSTANCE_FILE")
+        STATUS=$(linode-cli linodes view "$EXISTING_ID" --json 2>/dev/null | jq -r '.[0].status' 2>/dev/null || echo "gone")
+        if [[ "$STATUS" == "running" ]]; then
+            IP=$(jq -r '.ip' "$INSTANCE_FILE")
+            echo "Linode $EXISTING_ID already running at $IP"
+            return
+        else
+            echo "Stale instance file (status=$STATUS), provisioning new..."
+            rm -f "$INSTANCE_FILE"
+        fi
+    fi
+
+    echo "Creating Linode ($TYPE in $REGION)..."
+    CREATE_OUTPUT=$(linode-cli linodes create \
+        --region "$REGION" \
+        --type "$TYPE" \
+        --image "$IMAGE" \
+        --label "$LABEL" \
+        --root_pass "$(openssl rand -base64 32)" \
+        --authorized_keys "$SSH_PUBKEY" \
+        --metadata.user_data "$(base64 < "$DEPLOY_DIR/cloud-init.yaml" | tr -d '\n')" \
+        --json)
+
+    LINODE_ID=$(echo "$CREATE_OUTPUT" | jq -r '.[0].id')
+    IP=$(echo "$CREATE_OUTPUT" | jq -r '.[0].ipv4[0]')
+
+    if [[ -z "$LINODE_ID" || "$LINODE_ID" == "null" ]]; then
+        echo "Error: Failed to create Linode"
+        echo "$CREATE_OUTPUT"
+        exit 1
+    fi
+
+    jq -n --arg id "$LINODE_ID" --arg ip "$IP" '{"id": $id, "ip": $ip}' > "$INSTANCE_FILE"
+    echo "Linode $LINODE_ID created, IP: $IP"
+
+    # Wait for running
+    echo "Waiting for boot..."
+    for i in $(seq 1 60); do
+        STATUS=$(linode-cli linodes view "$LINODE_ID" --json | jq -r '.[0].status')
+        [[ "$STATUS" == "running" ]] && break
+        sleep 2
+    done
+
+    # Wait for SSH
+    echo "Waiting for SSH..."
+    for i in $(seq 1 30); do
+        ssh $SSH_OPTS root@"$IP" true 2>/dev/null && break
+        sleep 2
+    done
+
+    # Wait for cloud-init
+    echo "Waiting for cloud-init..."
+    ssh $SSH_OPTS root@"$IP" "cloud-init status --wait" 2>/dev/null || true
+
+    echo "Instance provisioned."
+}
+
+build_and_deploy() {
+    IP=$(jq -r '.ip' "$INSTANCE_FILE")
+    SSH_OPTS="-i $SSH_DIR/id_ed25519 $SSH_OPTS"
+
+    echo "Cross-compiling server for linux/amd64..."
+    cd "$PROJECT_DIR"
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "$DEPLOY_DIR/server-linux" ./server/
+
+    echo "Uploading server binary..."
+    scp $SSH_OPTS "$DEPLOY_DIR/server-linux" root@"$IP":/opt/floxybot/bin/server
+
+    echo "Setting permissions and restarting service..."
+    ssh $SSH_OPTS root@"$IP" "chmod +x /opt/floxybot/bin/server && systemctl restart floxybot && systemctl enable floxybot"
+
+    # Upload canon snapshot if it exists
+    CANON_FILE="$PROJECT_DIR/data/canon/canon.gob"
+    if [[ -f "$CANON_FILE" ]]; then
+        echo "Uploading canon snapshot..."
+        scp $SSH_OPTS "$CANON_FILE" root@"$IP":/opt/floxybot/data/canon/canon.gob
+    else
+        echo "No canon snapshot at $CANON_FILE — skip. Build one with: VOYAGE_API_KEY=... go run ./canon/build/"
+    fi
+
+    echo "Checking service status..."
+    sleep 2
+    ssh $SSH_OPTS root@"$IP" "systemctl status floxybot --no-pager" || true
+
+    cat <<EOF
+
+═══════════════════════════════════════════════════════════
+  Floxybot Backend Deployed
+═══════════════════════════════════════════════════════════
+
+  IP:       $IP
+  Health:   curl http://$IP/health
+  Canon:    curl -o canon.gob http://$IP/canon/latest
+
+  SSH:
+    ssh -i $SSH_DIR/id_ed25519 \\
+        -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \\
+        root@$IP
+
+  To add a domain with TLS:
+    1. Point DNS A record to $IP
+    2. SSH in and edit /etc/caddy/Caddyfile:
+       yourdomain.com {
+         reverse_proxy localhost:8080
+       }
+    3. systemctl restart caddy
+═══════════════════════════════════════════════════════════
+EOF
+}
+
+provision
+build_and_deploy

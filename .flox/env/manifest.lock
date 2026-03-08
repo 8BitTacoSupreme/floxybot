@@ -1,0 +1,608 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "flox-mcp-server": {
+        "pkg-path": "flox/flox-mcp-server"
+      },
+      "git": {
+        "pkg-path": "git"
+      },
+      "gnumake": {
+        "pkg-path": "gnumake"
+      },
+      "go": {
+        "pkg-path": "go"
+      },
+      "jq": {
+        "pkg-path": "jq"
+      },
+      "linode-cli": {
+        "pkg-path": "linode-cli"
+      }
+    },
+    "vars": {
+      "FLOXYBOT_CANON_DIR": "$FLOX_ENV_PROJECT/data/canon"
+    },
+    "hook": {
+      "on-activate": "  mkdir -p \"$FLOXYBOT_CANON_DIR\"\n\n  echo \"floxybot dev environment activated\"\n  echo \"  Build:   make build\"\n  echo \"  Test:    make test\"\n  echo \"  Run:     ./floxybot context\"\n"
+    },
+    "profile": {},
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "aarch64-linux",
+        "x86_64-linux"
+      ]
+    },
+    "build": {
+      "floxybot": {
+        "command": "  mkdir -p $out/bin\n  go build -ldflags \"-X main.version=0.1.0\" -o $out/bin/floxybot ./cmd/floxybot\n",
+        "version": "0.1.0",
+        "description": "AI assistant for Flox"
+      }
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "flox-mcp-server",
+      "broken": false,
+      "derivation": "/nix/store/inlxks5yk57808y2kc654g2y2wdh73hh-flox-mcp-server-0.2.2.drv",
+      "description": "MCP server for Flox package manager",
+      "install_id": "flox-mcp-server",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/mcp-server?rev=61f940167b7a1d245e314fb84668232ed7195f93",
+      "name": "flox-mcp-server-0.2.2",
+      "pname": "flox-mcp-server",
+      "rev": "61f940167b7a1d245e314fb84668232ed7195f93",
+      "rev_count": 30,
+      "rev_date": "2026-02-03T16:40:14Z",
+      "scrape_date": "2026-03-06T22:28:46.762025Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.2.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/hdfanrwiqj9302qiivnpqanfq1zk8srh-flox-mcp-server-0.2.2-dist",
+        "out": "/nix/store/6ln8l75s9pi54xz1dlksya8rlq8cz230-flox-mcp-server-0.2.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "flox-mcp-server",
+      "broken": false,
+      "derivation": "/nix/store/pdimfq1f3l2kmx2plr6xpas8abby5y2p-flox-mcp-server-0.2.2.drv",
+      "description": "MCP server for Flox package manager",
+      "install_id": "flox-mcp-server",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/mcp-server?rev=61f940167b7a1d245e314fb84668232ed7195f93",
+      "name": "flox-mcp-server-0.2.2",
+      "pname": "flox-mcp-server",
+      "rev": "61f940167b7a1d245e314fb84668232ed7195f93",
+      "rev_count": 30,
+      "rev_date": "2026-02-03T16:40:14Z",
+      "scrape_date": "2026-03-06T22:28:46.762032Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.2.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/6zjsiagcmx2qflf30kgcnfakipynghlk-flox-mcp-server-0.2.2-dist",
+        "out": "/nix/store/h4y7xqn88gyxd7vymv40y9jnf4l06p5i-flox-mcp-server-0.2.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "flox-mcp-server",
+      "broken": false,
+      "derivation": "/nix/store/nnqy64nl48nwnz26x2kwagr10ryz54yg-flox-mcp-server-0.2.2.drv",
+      "description": "MCP server for Flox package manager",
+      "install_id": "flox-mcp-server",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/mcp-server?rev=61f940167b7a1d245e314fb84668232ed7195f93",
+      "name": "flox-mcp-server-0.2.2",
+      "pname": "flox-mcp-server",
+      "rev": "61f940167b7a1d245e314fb84668232ed7195f93",
+      "rev_count": 30,
+      "rev_date": "2026-02-03T16:40:14Z",
+      "scrape_date": "2026-03-06T22:28:46.762035Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.2.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/g2xdbvax1d4yv0czq31pkfnyf5snynh1-flox-mcp-server-0.2.2-dist",
+        "out": "/nix/store/xwcqr4jvj2fqnm6jhxaakigbry38y7vk-flox-mcp-server-0.2.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/6d98i7ksgr6d4xjjh0y6fl6ianxxzzbf-git-2.51.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "git-2.51.0",
+      "pname": "git",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T01:44:33.359055Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/4gwi3dw7ay6ddmzyzx36a15ds51493hz-git-2.51.0-doc",
+        "out": "/nix/store/4q2dd3sf6xq9bky0aq2wyp2pf958j0rz-git-2.51.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/jcd1hmakc99sfm5hzxgscpgkdhiq7bk4-git-2.51.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "git-2.51.0",
+      "pname": "git",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T02:14:05.248327Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/xh22pd5vdl2i1lj975gsv0dc4ywwi42j-git-2.51.0-debug",
+        "doc": "/nix/store/lxbmn3fzikq9l7aw4xi6lkxqmc2866qd-git-2.51.0-doc",
+        "out": "/nix/store/7x5qzsv0msjcvyhn98zayq520gdwb76m-git-2.51.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/yyw6nzfcdckb36blm5mf5b5mss1m9asq-git-2.51.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "git-2.51.0",
+      "pname": "git",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T03:13:49.598077Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.51.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/zdh0b77j1n8irhshwgrhyjfrrjxk9fbw-git-2.51.0-debug",
+        "doc": "/nix/store/vjjhqc2vixs1pfy4bh5qpqrvqg042vd4-git-2.51.0-doc",
+        "out": "/nix/store/q1zaii9cirbfpmwr7d86hpppql3kjcpf-git-2.51.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/pf71f0ja823aanl6073z3slrpz2hpxr1-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T01:44:33.461502Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/cwx5agxi3ig3gmbk4c4dn7df2krzlddy-gnumake-4.4.1-info",
+        "man": "/nix/store/a4aay80xgirjm8hk1rd142qcd1kkfps8-gnumake-4.4.1-man",
+        "out": "/nix/store/sjxx5p05vzq7xam62h21cyzkbyb1amvd-gnumake-4.4.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/876aq0p8d0z7sfyjdawn9mrdfnv7n458-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T02:14:05.757816Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/j8lcp5zjdq0l0ipvji7s13vdc53nzcki-gnumake-4.4.1-debug",
+        "info": "/nix/store/8922q241lh4qbxd2g7jxsnjnkfmgap3z-gnumake-4.4.1-info",
+        "man": "/nix/store/0a4l47b9sqc28ssi5hsq21ivs2hmbzcp-gnumake-4.4.1-man",
+        "out": "/nix/store/9cns3585v908dwbf5nfqqjghv955ndrq-gnumake-4.4.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gnumake",
+      "broken": false,
+      "derivation": "/nix/store/riz7jd6hvqpxzxgyhj76ianh96sxhvz4-gnumake-4.4.1.drv",
+      "description": "Tool to control the generation of non-source files from sources",
+      "install_id": "gnumake",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "gnumake-4.4.1",
+      "pname": "gnumake",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T03:13:50.149682Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.4.1",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/7vrxj6zy7y4a83d2q9585sxmcnkfs9ml-gnumake-4.4.1-debug",
+        "info": "/nix/store/m0ijkc5j3wdawh302pns9b45v9n6nq64-gnumake-4.4.1-info",
+        "man": "/nix/store/ha44mgbdcrzgah0dnjd28ax4hrdkc4mm-gnumake-4.4.1-man",
+        "out": "/nix/store/ahxj2q2mrl9z2k77ahqsl9j4zxq1wf84-gnumake-4.4.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "go",
+      "broken": false,
+      "derivation": "/nix/store/s3y2xgs6d01qvf0yhgw455ghiylmn8jy-go-1.25.0.drv",
+      "description": "Go Programming language",
+      "install_id": "go",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "go-1.25.0",
+      "pname": "go",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T01:44:33.470231Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.25.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/cr196bvbbai01r0w11p1inkzkdrqdx6y-go-1.25.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "go",
+      "broken": false,
+      "derivation": "/nix/store/i027if1wkdbbk9vmkjf4281iqfdjzwp0-go-1.25.0.drv",
+      "description": "Go Programming language",
+      "install_id": "go",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "go-1.25.0",
+      "pname": "go",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T02:14:05.771574Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.25.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/yhcdwwikp86p2cpq0qr7di91ji63460s-go-1.25.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "go",
+      "broken": false,
+      "derivation": "/nix/store/pxn4bbdbwd25r02kvp7a1jp3fjykrb65-go-1.25.0.drv",
+      "description": "Go Programming language",
+      "install_id": "go",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "go-1.25.0",
+      "pname": "go",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T03:13:50.163724Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.25.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/3fd683jfggglpshxprz9mi5sz8wd3c9p-go-1.25.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/7hf5gwzdlj1y94kbh5zkl5gy5zhp9n1h-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T01:44:47.757529Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/8cadjdrc1gjc66ijgn2wnmfj6yajnxmb-jq-1.8.1-bin",
+        "dev": "/nix/store/vcjkcdi02h123i073sxma5kfhps9z2fd-jq-1.8.1-dev",
+        "doc": "/nix/store/sbr5199a3y3vpx1kaphyl4nnjlpzzzym-jq-1.8.1-doc",
+        "man": "/nix/store/11rdl4l7v5gswf5gdizk02jy39bw7bby-jq-1.8.1-man",
+        "out": "/nix/store/i8v8j94vx41c1wfzp1n69ddbrrf192pq-jq-1.8.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/r3407x6ni6fznp3n9fpvn8rh0ybwf0g5-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T02:14:25.152446Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/ync89vi4g1xnkj4fxspc63zfvs7dk8aw-jq-1.8.1-bin",
+        "dev": "/nix/store/194yri6cyqad6yvbhpqp5wswsppnsi7x-jq-1.8.1-dev",
+        "doc": "/nix/store/cjmvz6ma3qnhdvapjf2yghw28lrah0ja-jq-1.8.1-doc",
+        "man": "/nix/store/44k1613ynml3cgx5v9k6saqw994hqcl9-jq-1.8.1-man",
+        "out": "/nix/store/hz4c9q3baf434zw2y0yzb3a5kkj3rhwl-jq-1.8.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/22067a6y3jqcmwj75pd2v2a9ccizajd0-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T03:14:10.752274Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/7jvwwz45qap70i6asxzcnbshhz88a5sv-jq-1.8.1-bin",
+        "dev": "/nix/store/5rp4imr3xn3qwwxpgmss2q9pj8bak9wy-jq-1.8.1-dev",
+        "doc": "/nix/store/j572lmsgrx4a9bim6gwlyn9mnlf67490-jq-1.8.1-doc",
+        "man": "/nix/store/laqc7c2c9j09vm1w58vmj633vc2wb3wv-jq-1.8.1-man",
+        "out": "/nix/store/byi56qh6h63rdhfjh4plnyndfcpqx13p-jq-1.8.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "linode-cli",
+      "broken": false,
+      "derivation": "/nix/store/ny90idik1mszndd53wn3mcqvas8nlf83-linode-cli-5.56.2.drv",
+      "description": "Linode Command Line Interface",
+      "install_id": "linode-cli",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "linode-cli-5.56.2",
+      "pname": "linode-cli",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T01:44:50.069012Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.56.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/d56154cpv9pax5m8k33ha2smy6472kw4-linode-cli-5.56.2-dist",
+        "out": "/nix/store/kiixa2mf86qlgdb2k8yp6xg9vvsvr3zy-linode-cli-5.56.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "linode-cli",
+      "broken": false,
+      "derivation": "/nix/store/vgjyfpjhyy0dvr2ii729rzqh8c5jk1a3-linode-cli-5.56.2.drv",
+      "description": "Linode Command Line Interface",
+      "install_id": "linode-cli",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "linode-cli-5.56.2",
+      "pname": "linode-cli",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T02:14:29.685369Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.56.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/bbd276m6p6lvgvyjln4b1n93ww6vg6in-linode-cli-5.56.2-dist",
+        "out": "/nix/store/q0gzjaqlyqhhg0q9ajs6i8bsclj956fg-linode-cli-5.56.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "linode-cli",
+      "broken": false,
+      "derivation": "/nix/store/7ylf0mpghnd5521jmfmhl6cyvkyx3lkm-linode-cli-5.56.2.drv",
+      "description": "Linode Command Line Interface",
+      "install_id": "linode-cli",
+      "license": "BSD-3-Clause",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "name": "linode-cli-5.56.2",
+      "pname": "linode-cli",
+      "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+      "rev_count": 868392,
+      "rev_date": "2025-09-28T05:12:35Z",
+      "scrape_date": "2025-09-30T03:14:15.454528Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "5.56.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dist": "/nix/store/2nd8rzjha83gfna5c3hbb8i63mi63cax-linode-cli-5.56.2-dist",
+        "out": "/nix/store/amf7y90y1hp33bnrpc2qmh7wd4k8m67q-linode-cli-5.56.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

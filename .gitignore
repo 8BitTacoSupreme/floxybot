@@ -1,0 +1,43 @@
+# Binaries (root level only)
+/floxybot
+/floxybot-server
+/canon-builder
+/canon-builder-linux
+*.exe
+
+# Data
+data/
+*.gob
+*.ndjson
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flox cache (keep env directory)
+.flox/cache/
+.flox/run/
+
+# Deploy secrets
+deploy/.ssh/
+deploy/.linode-instance

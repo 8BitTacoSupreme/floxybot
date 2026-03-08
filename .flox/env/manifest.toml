@@ -1,0 +1,71 @@
+## Flox Environment Manifest -----------------------------------------
+##
+##   _Everything_ you need to know about the _manifest_ is here:
+##
+##   https://flox.dev/docs/reference/command-reference/manifest.toml/
+##
+## -------------------------------------------------------------------
+# Flox manifest version managed by Flox CLI
+version = 1
+
+
+## Install Packages --------------------------------------------------
+[install]
+# Go toolchain
+go.pkg-path = "go"
+
+# Flox MCP server (for agent/co-pilot mode)
+flox-mcp-server.pkg-path = "flox/flox-mcp-server"
+
+# Build/dev tools
+gnumake.pkg-path = "gnumake"
+git.pkg-path = "git"
+linode-cli.pkg-path = "linode-cli"
+jq.pkg-path = "jq"
+
+
+## Environment Variables ---------------------------------------------
+[vars]
+FLOXYBOT_CANON_DIR = "$FLOX_ENV_PROJECT/data/canon"
+
+
+## Activation Hook ---------------------------------------------------
+[hook]
+on-activate = '''
+  mkdir -p "$FLOXYBOT_CANON_DIR"
+
+  echo "floxybot dev environment activated"
+  echo "  Build:   make build"
+  echo "  Test:    make test"
+  echo "  Run:     ./floxybot context"
+'''
+
+
+## Profile script ----------------------------------------------------
+[profile]
+# common = '''
+# '''
+
+
+## Services ----------------------------------------------------------
+[services]
+# No persistent services needed for the Go binary dev workflow.
+
+
+## Build and publish -------------------------------------------------
+[build.floxybot]
+description = "AI assistant for Flox"
+version = "0.1.0"
+command = """
+  mkdir -p $out/bin
+  go build -ldflags "-X main.version=0.1.0" -o $out/bin/floxybot ./cmd/floxybot
+"""
+
+
+## Options -----------------------------------------------------------
+[options]
+systems = [
+  "aarch64-darwin",
+  "aarch64-linux",
+  "x86_64-linux",
+]

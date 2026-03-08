@@ -1,0 +1,62 @@
+#cloud-config
+packages:
+  - postgresql-server
+  - postgresql
+  - caddy
+  - rsync
+
+runcmd:
+  # Initialize and start PostgreSQL
+  - postgresql-setup --initdb
+  - systemctl enable --now postgresql
+
+  # Create floxybot database and user
+  - sudo -u postgres psql -c "CREATE USER floxybot WITH PASSWORD 'floxybot';"
+  - sudo -u postgres psql -c "CREATE DATABASE floxybot OWNER floxybot;"
+  - |
+    # Allow password auth for floxybot user (local + TCP localhost)
+    sed -i 's/peer$/md5/' /var/lib/pgsql/data/pg_hba.conf
+    sed -i 's/ident$/md5/' /var/lib/pgsql/data/pg_hba.conf
+    systemctl restart postgresql
+
+  # Create directories
+  - mkdir -p /opt/floxybot/data/canon
+  - mkdir -p /opt/floxybot/bin
+
+  # Create systemd service for floxybot backend
+  - |
+    cat > /etc/systemd/system/floxybot.service <<'EOF'
+    [Unit]
+    Description=Floxybot Backend
+    After=network.target postgresql.service
+    Requires=postgresql.service
+
+    [Service]
+    Type=simple
+    User=root
+    WorkingDirectory=/opt/floxybot
+    ExecStart=/opt/floxybot/bin/server
+    Environment=PORT=8080
+    Environment=CANON_DIR=/opt/floxybot/data/canon
+    Environment=DATABASE_URL=postgres://floxybot:floxybot@localhost/floxybot?sslmode=disable
+    Restart=always
+    RestartSec=5
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+    systemctl daemon-reload
+
+  # Open HTTP/HTTPS in firewall
+  - firewall-cmd --permanent --add-service=http
+  - firewall-cmd --permanent --add-service=https
+  - firewall-cmd --reload
+
+  # Configure Caddy as reverse proxy
+  - |
+    cat > /etc/caddy/Caddyfile <<'EOF'
+    :80 {
+      reverse_proxy localhost:8080
+    }
+    EOF
+    systemctl enable --now caddy

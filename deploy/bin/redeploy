@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Quick redeploy: rebuild server binary and upload to existing instance.
+# Does NOT reprovision the Linode.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEPLOY_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_DIR="$(cd "$DEPLOY_DIR/.." && pwd)"
+INSTANCE_FILE="$DEPLOY_DIR/.linode-instance"
+SSH_DIR="$DEPLOY_DIR/.ssh/floxybot"
+
+if [[ ! -f "$INSTANCE_FILE" ]]; then
+    echo "No instance running. Run deploy/bin/deploy first."
+    exit 1
+fi
+
+IP=$(jq -r '.ip' "$INSTANCE_FILE")
+SSH_OPTS="-i $SSH_DIR/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+
+echo "Cross-compiling server..."
+cd "$PROJECT_DIR"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "$DEPLOY_DIR/server-linux" ./server/
+
+echo "Uploading to $IP..."
+scp $SSH_OPTS "$DEPLOY_DIR/server-linux" root@"$IP":/opt/floxybot/bin/server
+
+echo "Restarting service..."
+ssh $SSH_OPTS root@"$IP" "chmod +x /opt/floxybot/bin/server && systemctl restart floxybot"
+
+sleep 2
+ssh $SSH_OPTS root@"$IP" "systemctl status floxybot --no-pager" || true
+echo "Redeployed."
