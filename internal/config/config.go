@@ -23,7 +23,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		Model:      "claude-sonnet-4-20250514",
 		CanonDir:   filepath.Join(dataDir, "floxybot", "canon"),
-		BackendURL: "https://floxybot.example.com",
+		BackendURL: "http://172.234.219.150",
 	}
 }
 
