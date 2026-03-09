@@ -38,8 +38,28 @@ func NewStore(persistDir string, voyageClient *voyage.EmbeddingClient) (*Store, 
 	return &Store{db: db, collection: col}, nil
 }
 
-// AddChunks adds document chunks to the store. Embeddings are computed via Voyage.
+// NewStoreWithEmbeddings creates a store for pre-embedded chunks (no Voyage calls needed for loading).
+func NewStoreWithEmbeddings(voyageClient *voyage.EmbeddingClient) (*Store, error) {
+	db := chromem.NewDB()
+	embeddingFunc := voyageEmbeddingFunc(voyageClient)
+
+	col, err := db.GetOrCreateCollection("flox_docs", nil, embeddingFunc)
+	if err != nil {
+		return nil, fmt.Errorf("creating collection: %w", err)
+	}
+
+	return &Store{db: db, collection: col}, nil
+}
+
+// AddChunks adds document chunks to the store. If chunks have pre-computed embeddings,
+// they are used directly (no Voyage API calls). Otherwise, embeddings are computed via Voyage.
 func (s *Store) AddChunks(ctx context.Context, chunks []Chunk) error {
+	// Check if chunks have pre-computed embeddings.
+	if len(chunks) > 0 && len(chunks[0].Embedding) > 0 {
+		return s.addPreEmbeddedChunks(ctx, chunks)
+	}
+
+	// No pre-computed embeddings — use Voyage API (slow on free tier).
 	docs := make([]chromem.Document, len(chunks))
 	for i, c := range chunks {
 		docs[i] = chromem.Document{
@@ -54,6 +74,35 @@ func (s *Store) AddChunks(ctx context.Context, chunks []Chunk) error {
 
 	// Use small batches with concurrency=1 to respect Voyage rate limits.
 	const batchSize = 10
+	for i := 0; i < len(docs); i += batchSize {
+		end := i + batchSize
+		if end > len(docs) {
+			end = len(docs)
+		}
+		if err := s.collection.AddDocuments(ctx, docs[i:end], 1); err != nil {
+			return fmt.Errorf("adding batch %d: %w", i/batchSize, err)
+		}
+	}
+	return nil
+}
+
+// addPreEmbeddedChunks loads chunks with their pre-computed embeddings directly.
+func (s *Store) addPreEmbeddedChunks(ctx context.Context, chunks []Chunk) error {
+	docs := make([]chromem.Document, len(chunks))
+	for i, c := range chunks {
+		docs[i] = chromem.Document{
+			ID:      fmt.Sprintf("%s#%d", c.URL, c.Index),
+			Content: c.Text,
+			Metadata: map[string]string{
+				"url":   c.URL,
+				"title": c.Title,
+			},
+			Embedding: c.Embedding,
+		}
+	}
+
+	// Batch add — no API calls needed, so larger batches and higher concurrency are fine.
+	const batchSize = 500
 	for i := 0; i < len(docs); i += batchSize {
 		end := i + batchSize
 		if end > len(docs) {

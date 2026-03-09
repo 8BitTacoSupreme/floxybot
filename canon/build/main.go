@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/8BitTacoSupreme/floxybot/internal/canon"
 	"github.com/8BitTacoSupreme/floxybot/internal/rag"
+	"github.com/8BitTacoSupreme/floxybot/internal/voyage"
 )
 
 func main() {
@@ -67,9 +69,22 @@ func convertJSON(jsonPath, gobPath string) error {
 		}
 	}
 
+	// Pre-compute embeddings if VOYAGE_API_KEY is set.
+	voyageKey := os.Getenv("VOYAGE_API_KEY")
+	if voyageKey != "" {
+		fmt.Printf("Pre-computing embeddings for %d chunks...\n", len(chunks))
+		if err := embedChunks(chunks, voyageKey); err != nil {
+			return fmt.Errorf("embedding chunks: %w", err)
+		}
+	} else {
+		fmt.Println("No VOYAGE_API_KEY set — skipping embedding pre-computation.")
+		fmt.Println("Users will need VOYAGE_API_KEY at runtime.")
+	}
+
 	snap := &canon.Snapshot{
-		Version: "1",
-		Chunks:  chunks,
+		Version:   "2",
+		CreatedAt: time.Now(),
+		Chunks:    chunks,
 	}
 
 	if err := canon.SaveSnapshot(gobPath, snap); err != nil {
@@ -77,5 +92,40 @@ func convertJSON(jsonPath, gobPath string) error {
 	}
 
 	fmt.Printf("Converted %d chunks -> %s\n", len(chunks), gobPath)
+	return nil
+}
+
+func embedChunks(chunks []rag.Chunk, apiKey string) error {
+	client := voyage.NewEmbeddingClient(apiKey)
+	ctx := context.Background()
+
+	// Batch embed to minimize API calls. Voyage accepts up to 128 texts per call.
+	const batchSize = 64
+	for i := 0; i < len(chunks); i += batchSize {
+		end := i + batchSize
+		if end > len(chunks) {
+			end = len(chunks)
+		}
+
+		texts := make([]string, end-i)
+		for j := i; j < end; j++ {
+			texts[j-i] = chunks[j].Text
+		}
+
+		embeddings, err := client.Embed(ctx, texts)
+		if err != nil {
+			return fmt.Errorf("batch %d-%d: %w", i, end, err)
+		}
+
+		for j, emb := range embeddings {
+			chunks[i+j].Embedding = emb
+		}
+
+		done := end
+		if done > len(chunks) {
+			done = len(chunks)
+		}
+		fmt.Printf("  embedded %d/%d chunks\n", done, len(chunks))
+	}
 	return nil
 }

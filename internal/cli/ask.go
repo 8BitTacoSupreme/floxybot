@@ -79,7 +79,7 @@ func askClaude(ctx context.Context, cfg *config.Config, systemPrompt, question s
 func askWithRAG(ctx context.Context, cfg *config.Config, systemPrompt, question string) error {
 	voyageKey := cfg.VoyageAPIKey
 	if voyageKey == "" {
-		return fmt.Errorf("VOYAGE_API_KEY is required (set env or config, or use --no-rag)")
+		return fmt.Errorf("VOYAGE_API_KEY is required for RAG queries (set env or config, or use --no-rag)")
 	}
 
 	voyageEmbed := voyage.NewEmbeddingClient(voyageKey)
@@ -92,12 +92,18 @@ func askWithRAG(ctx context.Context, cfg *config.Config, systemPrompt, question 
 		return fmt.Errorf("loading canon snapshot from %s: %w\nRun 'floxybot canon update' to download one.", snapPath, err)
 	}
 
-	// Build in-memory vector store from snapshot chunks.
-	store, err := rag.NewStore("", voyageEmbed)
+	// Build in-memory vector store. Pre-embedded chunks load instantly.
+	store, err := rag.NewStoreWithEmbeddings(voyageEmbed)
 	if err != nil {
 		return fmt.Errorf("creating store: %w", err)
 	}
-	fmt.Fprintf(os.Stderr, "Loading %d chunks into vector store...\n", len(snap.Chunks))
+
+	hasEmbeddings := len(snap.Chunks) > 0 && len(snap.Chunks[0].Embedding) > 0
+	if hasEmbeddings {
+		fmt.Fprintf(os.Stderr, "Loading %d pre-embedded chunks...\n", len(snap.Chunks))
+	} else {
+		fmt.Fprintf(os.Stderr, "Loading %d chunks (computing embeddings — this may be slow)...\n", len(snap.Chunks))
+	}
 	if err := store.AddChunks(ctx, snap.Chunks); err != nil {
 		return fmt.Errorf("loading chunks: %w", err)
 	}

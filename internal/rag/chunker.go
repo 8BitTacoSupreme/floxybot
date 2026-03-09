@@ -8,12 +8,13 @@ const (
 	CharsPerToken    = 4    // rough approximation
 )
 
-// Chunk represents a piece of a document.
+// Chunk represents a piece of a document with an optional pre-computed embedding.
 type Chunk struct {
-	Text  string
-	URL   string
-	Title string
-	Index int
+	Text      string
+	URL       string
+	Title     string
+	Index     int
+	Embedding []float32 // Pre-computed Voyage embedding (nil if not yet embedded)
 }
 
 // ChunkText splits text into overlapping chunks, breaking at sentence boundaries.
